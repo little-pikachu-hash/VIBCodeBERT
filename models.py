@@ -167,15 +167,7 @@ class RobertaForSequenceClassification(RobertaPreTrainedModel):
             pooled_output = self.dropout(pooled_output)
         loss = {}
 
-        if self.deterministic:
-            pooled_output = self.mlp(pooled_output)
-            mu, std = self.estimate(pooled_output, self.emb2mu, self.emb2std)
-            final_outputs["z"] = mu
-            sampled_logits, logits = self.get_logits(mu, mu, sampling_type='argmax') # always deterministic
-            if labels is not None:
-                loss["loss"] = self.sampled_loss(sampled_logits, logits, labels.view(-1), sampling_type='argmax')
-
-        elif self.ib:
+        if self.ib:
             pooled_output = self.mlp(pooled_output)
             batch_size = pooled_output.shape[0]
             mu, std = self.estimate(pooled_output, self.emb2mu, self.emb2std)
@@ -203,10 +195,6 @@ class RobertaForSequenceClassification(RobertaPreTrainedModel):
                 else:
                     loss_fct = CrossEntropyLoss()
                     loss["loss"] = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
-
-        if self.scl:
-            contrastive_l = self.contrastive_loss(final_outputs["z"].cpu().detach().numpy(), labels.view(-1))
-            loss["loss"] = 0.9 * contrastive_l + 0.1 * loss["loss"]
 
         final_outputs.update({"logits": logits, "loss": loss, "hidden_attention": outputs[2:]})
         return final_outputs

@@ -387,8 +387,6 @@ def get_args():
             loss.")
     parser.add_argument("--ib", action="store_true", help="If specified, uses the information bottleneck to reduce\
             the dimensions.")
-    parser.add_argument("--scl", action="store_true", help="If specified, uses the information bottleneck to reduce\
-            the dimensions.")
     parser.add_argument("--sample_size", type=int, default=5, help="Defines the number of samples for the ib method.")
     parser.add_argument("--ib_dim", default=128, type=int,
                         help="Specifies the dimension of the information bottleneck.")
@@ -565,7 +563,6 @@ def main(args, results_df, seed):
         args.hidden_dim = (768 + args.ib_dim) // 2
     # sets the parameters of IB or MLP baseline.
     config.ib = args.ib
-    config.scl = args.scl
     config.activation = args.activation
     config.hidden_dim = args.hidden_dim
     config.ib_dim = args.ib_dim
@@ -614,17 +611,3 @@ if __name__ == "__main__":
     for seed in args.seeds:
         set_seed(seed)
         results = main(args, results, seed)
-
-    # huggingface/CodeBERTa-small-v1
-    # nohup python run_glue.py  --model_name_or_path  microsoft/codebert-base --output_dir jv3_output_ib_beta6 --task_name jv3 \
-    # --model_type roberta --do_eval    --max_seq_length 256  --num_train_epochs 20   \
-    # --overwrite_output_dir --ib --output results/results_jv3_ib_beta6.csv  --ib_dim 384  \
-    # --beta 1e-06 --learning_rate 2e-5  --do_train  --eval_types dev train  \
-    # --kl_annealing linear --evaluate_after_each_epoch --seed 812 > jv3_beta6.out &
-
-    ################################
-    # nohup python run_glue.py  --model_name_or_path  ./poj_output_ib_beta6 --output_dir temp --task_name poj \
-    # --model_type roberta --do_eval    --max_seq_length 256  --num_train_epochs 50   \
-    # --overwrite_output_dir --ib --output results/temp.csv  --ib_dim 384  \
-    # --beta 1e-06 --learning_rate 2e-5 --evaluate_after_each_epoch --do_train  --eval_types dev train test  \
-    # --kl_annealing linear --seed 812

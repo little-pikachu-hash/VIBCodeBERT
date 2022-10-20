@@ -83,7 +83,7 @@ def convert_examples(args, task, tokenizer, label_list, examples):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dropout", action="store_true", help="If specified, uses the information bottleneck to reduce\
+    parser.add_argument("--use_dropout", action="store_true", help="If specified, uses the information bottleneck to reduce\
             the dimensions.")
     parser.add_argument("--mixout", type=float, default=0.0, help="mixout probability (default: 0)")
     parser.add_argument(
@@ -105,8 +105,6 @@ def get_args():
     parser.add_argument("--beta", type=float, default=1.0, help="Defines the weight for the information bottleneck\
             loss.")
     parser.add_argument("--ib", action="store_true", help="If specified, uses the information bottleneck to reduce\
-            the dimensions.")
-    parser.add_argument("--scl", action="store_true", help="If specified, uses the information bottleneck to reduce\
             the dimensions.")
     parser.add_argument("--sample_size", type=int, default=5, help="Defines the number of samples for the ib method.")
     parser.add_argument("--ib_dim", default=128, type=int,
@@ -233,7 +231,6 @@ def get_config(args):
         args.hidden_dim = (768 + args.ib_dim) // 2
     # sets the parameters of IB or MLP baseline.
     config.ib = args.ib
-    config.scl = args.scl
     config.activation = args.activation
     config.hidden_dim = args.hidden_dim
     config.ib_dim = args.ib_dim
@@ -241,7 +238,7 @@ def get_config(args):
     config.sample_size = args.sample_size
     config.kl_annealing = args.kl_annealing
     config.deterministic = args.deterministic
-    config.dropout = args.dropout
+    config.use_dropout = args.use_dropout
     return config
 
 

@@ -388,8 +388,6 @@ def get_args():
             loss.")
     parser.add_argument("--ib", action="store_true", help="If specified, uses the information bottleneck to reduce\
             the dimensions.")
-    parser.add_argument("--scl", action="store_true", help="If specified, uses the information bottleneck to reduce\
-            the dimensions.")
     parser.add_argument("--sample_size", type=int, default=5, help="Defines the number of samples for the ib method.")
     parser.add_argument("--ib_dim", default=128, type=int,
                         help="Specifies the dimension of the information bottleneck.")
@@ -572,7 +570,6 @@ def main(args, results_df, seed):
         args.hidden_dim = (768 + args.ib_dim) // 2
     # sets the parameters of IB or MLP baseline.
     config.ib = args.ib
-    config.scl = args.scl
     config.activation = args.activation
     config.hidden_dim = args.hidden_dim
     config.ib_dim = args.ib_dim
