@@ -538,13 +538,10 @@ def get_args():
     args.device = torch.device(args.cuda)
 
     args.task_to_data_dir = {
-        "smell2": "./data/smell/",
-        "read2": "./data/read/",
-        "complexity2": "./data/complexity/",
+        "smell-few-shot": "./data/smell/",
+        "read-few-shot": "./data/read/",
+        "complexity-few-shot": "./data/complexity/",
         "coherence": "./data/coherence/",
-        "buggy": "./data/d2a_function/",
-        "juliet": "./data/juliet/",
-        "sbabi": "./data/sbabi/",
     }
 
     # Prepare GLUE task
@@ -624,17 +621,3 @@ if __name__ == "__main__":
         torch.cuda.empty_cache()
         set_seed(seed)
         results = main(args, results, seed)
-
-    # huggingface/CodeBERTa-small-v1
-    # nohup python run_glue_varying.py  --model_name_or_path  microsoft/codebert-base --output_dir output_coherence_ib_10  \
-    # --model_type roberta --do_eval    --max_seq_length 512  --num_train_epochs 20  --task_name coherence \
-    # --overwrite_output_dir --ib --output results/results_coherence_ib_10.csv  --ib_dim 384  \
-    # --beta 1e-05 --learning_rate 2e-5  --do_train  --eval_types dev --kl_annealing linear \
-    #  --evaluate_after_each_epoch --seed 100 200 300 400 500 --shot 10&
-
-    ################################
-    ### nib ###
-    # nohup python run_glue_varying.py  --model_name_or_path  huggingface/CodeBERTa-small-v1 --output_dir output_coherence_nib_10  \
-    # --model_type roberta --do_eval  --do_train  --max_seq_length 512  --num_train_epochs 20 --shot 10  \
-    # --overwrite_output_dir --ib --output results/results_coherence_nib_10.csv  --task_name coherence  \
-    # --learning_rate 2e-5 --evaluate_after_each_epoch  --eval_types test --seed 100 200 300 400 500 &

@@ -365,7 +365,7 @@ def load_and_cache_examples(args, task, tokenizer, eval_type, processor, add_gui
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dropout", action="store_true", help="If specified, learns the reduced dimensions\
+    parser.add_argument("--use_dropout", action="store_true", help="If specified, learns the reduced dimensions\
             through mlp in a deterministic manner.")
     parser.add_argument("--mixout", type=float, default=0.0, help="mixout probability (default: 0)")
     parser.add_argument(
@@ -534,19 +534,7 @@ def get_args():
     args.device = torch.device(args.cuda)
 
     args.task_to_data_dir = {
-        "poj": "./data/poj104/",
-        "py800": "/home/liujiaxing/code/MixText/data/python_800/",
-        "py20": "/home/liujiaxing/code/MixText/data/python_20/",
-        "py100": "/home/liujiaxing/code/MixText/data/python_100/",
-        "jv100": "/home/liujiaxing/code/MixText/data/java_100/",
-        "jv3": "/home/liujiaxing/code/MixText/data/java_3/",
-        "jv50": "/home/liujiaxing/code/MixText/data/java_50/",
-        "jv250": "/home/liujiaxing/code/MixText/data/java_250/",
-        "smell": "/home/liujiaxing/code/MixText/data/smell2018SANER/",
         "coherence": "./data/coherence/",
-        "buggy": "./data/d2a_function/",
-        "juliet": "./data/juliet/",
-        "sbabi": "./data/sbabi/",
     }
 
     # Prepare GLUE task
@@ -585,7 +573,7 @@ def main(args, results_df, seed):
     config.sample_size = args.sample_size
     config.kl_annealing = args.kl_annealing
     config.deterministic = args.deterministic
-    config.dropout = args.dropout
+    config.use_dropout = args.use_dropout
 
     tokenizer = tokenizer_class.from_pretrained(
         args.tokenizer_name if args.tokenizer_name else args.model_name_or_path

@@ -217,41 +217,7 @@ def convert_examples_to_features(
     return features
 
 
-class YelpProcessor(DataProcessor):
-    """Processor for the Yelp dataset."""
 
-    def __init__(self):
-        self.num_classes = 5
-
-    def get_train_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "train.tsv")), "train")
-
-    def get_dev_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "test.tsv")), "test")
-
-    def get_validation_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(
-            self._read_tsv(os.path.join(data_dir, "valid.tsv")), "dev")
-
-    def get_labels(self):
-        """See base class."""
-        return ["0", "1", "2", "3", "4"]
-
-    def _create_examples(self, lines, set_type):
-        """Creates examples for the training and dev sets."""
-        examples = []
-        for (i, line) in enumerate(lines):
-            guid = "%s-%s" % (set_type, i)
-            label = line[0]
-            text_a = line[1]
-            examples.append(
-                InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
-        return examples
 
 
 class PojProcessor(DataProcessor):
@@ -300,48 +266,8 @@ class PojProcessor(DataProcessor):
         return examples
 
 
-class BuggyProcessor(DataProcessor):
 
-    def __init__(self, data_dir):
-        # We assume there is a training file there and we read labels from there.
-        test_df = pd.read_csv(data_dir + 'test.csv')
-        labels = test_df.label.values
-        self.labels = list(set(labels))
-        self.num_classes = len(self.labels)
-        print(self.labels)
-
-    def get_dev_labels(self, data_dir):
-        labels = pd.read_csv(data_dir + 'test.csv').label.values
-        return np.array(labels)
-
-    def get_validation_examples(self, data_dir):
-        return self._create_examples(data_dir, "test")
-
-    def get_train_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(data_dir, "train")
-
-    def get_dev_examples(self, data_dir):
-        """See base class."""
-        return self._create_examples(data_dir, "test")
-
-    def get_labels(self):
-        """See base class."""
-        return self.labels
-
-    def _create_examples(self, data_dir, set_type):
-        """Creates examples for the training and dev sets."""
-        logger.info(data_dir + '{}.csv'.format(set_type))
-        df = pd.read_csv(data_dir + '{}.csv'.format(set_type))
-        examples = []
-        for index, row in df.iterrows():
-            guid = int(row['id'])
-            examples.append(
-                InputExample(guid=guid, text_a=row['code'], label=row['label']))
-        return examples
-
-
-class SmellProcessor(object):
+class CrossFoldProcessor(object):
     def __init__(self, data_dir):
         # We assume there is a training file there and we read labels from there.
         self.data = json.load(open(data_dir + 'train_validate.jsonl'))
@@ -400,7 +326,7 @@ class ComplexityProcessor(object):
                 InputExample(guid=guid, text_a=example['code'], label=example['label']))
         return examples
 
-class SmellProcessor2(object):
+class FewShotProcessor(object):
     def __init__(self, data_dir):
         # We assume there is a training file there and we read labels from there.
         data = json.load(open(data_dir + 'train_validate.jsonl'))
@@ -564,64 +490,31 @@ def glue_compute_metrics(task_name, preds, labels, num_classes):
 
 
 processors = {
-    "yelp": YelpProcessor,
-    "poj": PojProcessor,
-    "py800": PojProcessor,
-    "py20": PojProcessor,
-    "jv250": PojProcessor,
-    "smell": SmellProcessor,
-    "smell2": SmellProcessor2,
-    "read2": SmellProcessor2,
-    "complexity2": SmellProcessor2,
-    "py100": PojProcessor,
-    "jv100": PojProcessor,
-    "jv50": PojProcessor,
-    "complexity": SmellProcessor,
+    "smell": CrossFoldProcessor,
+    "complexity": CrossFoldProcessor,
     "coherence": CoherenceProcessor,
-    "buggy": BuggyProcessor,
-    "sbabi": BuggyProcessor,
-    "read": SmellProcessor,
-    "juliet": BuggyProcessor,
+    "read": CrossFoldProcessor,
+    "smell-few-shot": FewShotProcessor,
+    "read-few-shot": FewShotProcessor,
+    "complexity-few-shot": FewShotProcessor,
 }
 
 output_modes = {
-    "sts-b": "regression",
-    "poj": "classification",
-    "py800": "classification",
-    "py20": "classification",
-    "jv250": "classification",
     "smell": "classification",
-    "smell2": "classification",
-    "complexity2": "classification",
-    "read2": "classification",
-    "py100": "classification",
-    "jv100": "classification",
-    "jv50": "classification",
     "complexity": "classification",
     "coherence": "classification",
-    "buggy": "classification",
-    "sbabi": "classification",
     "read": "classification",
-    "juliet": "classification",
+    "smell-few-shot": "classification",
+    "read-few-shot": "classification",
+    "complexity-few-shot": "classification",
 }
 
 GLUE_TASKS_NUM_LABELS = {
-    "yelp": 5,
-    "poj": 104,
-    "py800": 800,
-    "py20": 20,
-    "jv250": 250,
     "smell": 2,
-    "smell2": 2,
-    'py100': 100,
-    'jv100': 100,
-    'jv50': 50,
     'complexity': 5,
-    'complexity2': 5,
     'coherence': 2,
-    'buggy': 2,
     'read': 2,
-    'read2': 2,
-    'sbabi': 2,
-    'juliet': 2,
+    "smell-few-shot": 2,
+    "read-few-shot": 2,
+    "complexity-few-shot": 2,
 }

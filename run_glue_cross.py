@@ -204,11 +204,8 @@ def get_args():
     args.device = torch.device(args.cuda)
 
     args.task_to_data_dir = {
-        # epoch 20
         "smell": "./data/smell/",
-        # epoch 20
         "complexity": "./data/complexity/",
-        "coherence": "./data/coherence/",
         "read": "./data/read/",
     }
     return args
@@ -413,15 +410,3 @@ if __name__ == "__main__":
     for seed in args.seeds:
         set_seed(seed)
         results = main(args, results, seed)
-
-    # not vibert
-    # python run_glue_cross.py  --model_name_or_path  microsoft/codebert-base  --task_name smell \
-    # --n_splits 15 --learning_rate 2e-5 --num_train_epochs 8 --max_seq_length 256 --model_type roberta \
-    # --seed 100 200 300 400 500  --output results/smell_nib.csv
-
-    # vibert
-    # python run_glue_cross.py  --model_name_or_path  microsoft/codebert-base  --task_name smell \
-    # --model_type roberta  --n_splits 15 --max_seq_length 256  --num_train_epochs 8   --learning_rate 2e-5 \
-    # --ib --beta 1e-06 --ib_dim 384  --kl_annealing linear  \
-    # --seed 100 200 300 400 500  --output results/smell_ib.csv
-
